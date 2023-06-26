@@ -14,3 +14,11 @@ func EnvMongoURI() string {
 	}
 	return os.Getenv("MONGO_URI")
 }
+
+func EnvUserInfoURI() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return os.Getenv("KC_USERINFO_ENDPOINT")
+}
