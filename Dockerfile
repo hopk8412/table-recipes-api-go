@@ -10,5 +10,5 @@ COPY . ./
 RUN ls
 
 RUN go build -o table-recipes-api-go .
-EXPOSE 8084
+EXPOSE 8080
 ENTRYPOINT [ "./table-recipes-api-go" ]
