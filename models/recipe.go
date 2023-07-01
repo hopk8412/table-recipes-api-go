@@ -6,5 +6,5 @@ type Recipe struct {
 	Ingredients  []string `json:"ingredients,omitempty"`
 	Instructions []string `json:"instructions,omitempty"`
 	AuthorId     string   `bson:"authorId,omitempty" json:"authorId,omitempty"`
-	ImageLinks   string   `json:"imageLinks,omitempty"`
+	ImageLinks   []string   `bson:"imageLinks,omitempty" json:"imageLinks,omitempty"`
 }
