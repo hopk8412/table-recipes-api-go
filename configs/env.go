@@ -3,6 +3,7 @@ package configs
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -21,4 +22,12 @@ func EnvUserInfoURI() string {
 		log.Fatal(err)
 	}
 	return os.Getenv("KC_USERINFO_ENDPOINT")
+}
+
+func AllowedOrigins() []string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return strings.Split(os.Getenv("CORS_ALLOWED_LIST"), ",")
 }

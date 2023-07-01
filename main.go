@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/hopk8412/table-recipes-api/configs"
+	"golang.org/x/exp/slices"
 
 	"github.com/hopk8412/table-recipes-api/routes"
 
@@ -16,6 +17,8 @@ func main() {
 	router := gin.Default()
 
 	configs.ConnectDB()
+
+	router.Use(corsMiddleware())
 
 	prefix := "/api/v1"
 	routes.RecipeRoutes(router)
@@ -31,5 +34,21 @@ func main() {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "We couldn't find the page you requested!"})
 	})
 
-	router.Run("localhost:8080")
+	router.Run(":8080")
+}
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if origin := c.Request.Header.Get("Origin"); slices.Contains(configs.AllowedOrigins(), origin) {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+			c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+			if c.Request.Method == "OPTIONS" {
+				c.AbortWithStatus(204)
+				return
+			}
+		}
+		c.Next()
+	}
 }

@@ -135,6 +135,7 @@ func PostRecipe() gin.HandlerFunc {
 			Ingredients: recipe.Ingredients,
 			Instructions: recipe.Instructions,
 			AuthorId: recipe.AuthorId,
+			ImageLinks: recipe.ImageLinks,
 		}
 		result, err := recipeCollection.InsertOne(ctx, newRecipe)
 		if err != nil {
@@ -344,6 +345,7 @@ func GetUserFavoriteRecipes() gin.HandlerFunc {
 					c.JSON(http.StatusInternalServerError, responses.RecipeResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 				}
 				recipes = append(recipes, singleRecipe)
+				
 			}
 			c.JSON(http.StatusOK, responses.RecipeResponse{Status: http.StatusOK, Message: "Successfully fetched all recipes!", Data: map[string]interface{}{"data": recipes}})
 		}
