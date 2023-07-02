@@ -30,6 +30,7 @@ func main() {
 	router.POST(prefix+"/recipes/search", controllers.SearchForRecipes())
 	router.POST(prefix+"/users/:id/recipes", controllers.AddOrRemoveRecipeToUserFavorites())
 	router.DELETE(prefix+"/recipes/:id", controllers.DeleteRecipeById())
+	router.PUT(prefix+"/recipes/:id", controllers.UpdateRecipeById())
 	router.NoRoute(func(c *gin.Context) {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "We couldn't find the page you requested!"})
 	})

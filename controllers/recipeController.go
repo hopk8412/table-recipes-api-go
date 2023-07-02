@@ -66,6 +66,52 @@ func GetRecipeById() gin.HandlerFunc {
 	}
 }
 
+func UpdateRecipeById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		recipeId := c.Param("id")
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		var recipe models.Recipe
+		defer cancel()
+
+		result := recipeCollection.FindOne(ctx, bson.M{"_id": c.Param("id")})
+
+		err := result.Decode(&recipe) 
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.RecipeResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
+
+		var requestBody models.Recipe
+		c.Bind(&requestBody)
+
+		updates := bson.M{
+			"$set": bson.M{
+				"_id": recipeId,
+				"title": requestBody.Title,
+				"ingredients": requestBody.Ingredients,
+				"instructions": requestBody.Instructions,
+				"authorId": recipe.AuthorId,
+				"imageLinks": requestBody.ImageLinks,
+			},
+		}
+		_, err = recipeCollection.UpdateByID(ctx, recipeId, updates)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.RecipeResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
+
+		updatedRecipeData := models.Recipe{
+			Id: recipeId,
+			Title: requestBody.Title,
+			Ingredients: requestBody.Ingredients,
+			Instructions: requestBody.Instructions,
+			AuthorId: recipe.AuthorId,
+			ImageLinks: requestBody.ImageLinks,
+		}
+		c.JSON(http.StatusOK, responses.RecipeResponse{Status: http.StatusOK, Message: "Successfully updated recipe with ID " + recipeId, Data: map[string]interface{}{"data": updatedRecipeData}})
+	}
+}
+
 func GetRecipesByAuthorId() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeaderValue := c.Request.Header["Authorization"][0]
